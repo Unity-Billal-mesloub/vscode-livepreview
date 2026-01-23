@@ -5,7 +5,8 @@
 
 import { Disposable } from '../utils/dispose';
 import * as vscode from 'vscode';
-import { CustomExternalBrowser, Settings, SettingUtil } from '../utils/settingsUtil';
+import { Settings, SettingUtil } from '../utils/settingsUtil';
+import { INTEGRATED_BROWSER_COMMAND } from '../utils/constants';
 import {
 	DONT_SHOW_AGAIN,
 	INIT_PANEL_TITLE,
@@ -63,6 +64,14 @@ export class PreviewManager extends Disposable {
 		file?: vscode.Uri
 	): Promise<void> {
 		const path = file ? await this._fileUriToPath(file, connection) : '/';
+
+		// Check if we should use the integrated browser instead
+		if (await SettingUtil.shouldUseIntegratedBrowser()) {
+			const url = `http://${connection.host}:${connection.httpPort}${path}`;
+			await vscode.commands.executeCommand(INTEGRATED_BROWSER_COMMAND, url);
+			return;
+		}
+
 		// If we already have a panel, show it.
 		if (this.currentPanel) {
 			await this.currentPanel.reveal(
