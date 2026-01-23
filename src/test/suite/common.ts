@@ -37,6 +37,7 @@ export function makeSetting(nonDefaults: Partial<ILivePreviewConfigItem>): ILive
 		httpHeaders: {
 			"Accept-Ranges": "bytes"
 		},
+		useIntegratedBrowser: false,
 		...nonDefaults
 	};
 }

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { DEFAULT_HTTP_HEADERS } from './constants';
+import { DEFAULT_HTTP_HEADERS, INTEGRATED_BROWSER_COMMAND } from './constants';
 
 /**
  * @description the object representation of the extension settings.
@@ -24,6 +24,7 @@ export interface ILivePreviewConfigItem {
 	serverRoot: string;
 	previewDebounceDelay: number;
 	httpHeaders: any;
+	useIntegratedBrowser: boolean;
 }
 
 /**
@@ -74,7 +75,8 @@ export const Settings: any = {
 	customExternalBrowser: 'customExternalBrowser',
 	serverRoot: 'serverRoot',
 	previewDebounceDelay: 'previewDebounceDelay',
-	httpHeaders: 'httpHeaders'
+	httpHeaders: 'httpHeaders',
+	useIntegratedBrowser: 'useIntegratedBrowser'
 };
 
 /**
@@ -132,6 +134,7 @@ export class SettingUtil {
 			customExternalBrowser: config.get<CustomExternalBrowser>(Settings.customExternalBrowser, CustomExternalBrowser.default),
 			serverRoot: config.get<string>(Settings.serverRoot, ''),
 			httpHeaders: config.get<any>(Settings.httpHeaders, DEFAULT_HTTP_HEADERS),
+			useIntegratedBrowser: config.get<boolean>(Settings.useIntegratedBrowser, false),
 		};
 	}
 
@@ -173,5 +176,19 @@ export class SettingUtil {
 		await vscode.workspace
 			.getConfiguration(SETTINGS_SECTION_ID, uri)
 			.update(settingSuffix, value, scope);
+	}
+
+	/**
+	 * Checks if the integrated browser should be used instead of the simple browser.
+	 * This requires the integrated browser command to be available.
+	 */
+	public static async shouldUseIntegratedBrowser(): Promise<boolean> {
+		if (!SettingUtil.GetConfig().useIntegratedBrowser) {
+			return false;
+		}
+
+		// Verify that the integrated browser command is available
+		const commands = await vscode.commands.getCommands(true);
+		return commands.includes(INTEGRATED_BROWSER_COMMAND);
 	}
 }
