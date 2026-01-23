@@ -282,6 +282,7 @@
           "default": false,
           "description": "%settings.useIntegratedBrowser%",
           "tags": [
+            "experimental",
             "onExp"
           ]
         }
