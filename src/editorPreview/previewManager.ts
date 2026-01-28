@@ -68,7 +68,7 @@ export class PreviewManager extends Disposable {
 		// Check if we should use the integrated browser instead
 		if (await SettingUtil.shouldUseIntegratedBrowser()) {
 			const url = `http://${connection.host}:${connection.httpPort}${path}`;
-			await vscode.commands.executeCommand(INTEGRATED_BROWSER_COMMAND, url);
+			await vscode.commands.executeCommand(INTEGRATED_BROWSER_COMMAND, { url, openToSide: true });
 			return;
 		}
 
